@@ -1,3 +1,9 @@
+//Team WoeBeGone -- Jannie Li, Leo Auyeung, Henry Zhang
+//APCS2 pd09
+//HW46 -- Running Median
+//2016-05-27
+
+
 /*****************************************************
  * class RunMed
  * Implements an online algorithm to track the median of a growing dataset
@@ -20,7 +26,8 @@ public class RunMed {
      *****************************************************/
     public RunMed() 
     { 
-
+	leftHeap = new ALMaxHeap();
+	rightHeap = new ALMinHeap();
     }//O(1)
 
 
@@ -30,7 +37,14 @@ public class RunMed {
      *****************************************************/
     public double getMedian() 
     {
+	//if one heap bigger, odd data set, take the bigger one's min/max
+        if (leftHeap.size() > rightHeap.size())
+	    return leftHeap.peekMax();
+	if (leftHeap.size() < rightHeap.size())
+	    return rightHeap.peekMin();
 
+	//equal heap size, even data set, find avg
+	return (leftHeap.peekMax() + rightHeap.peekMin()) / 2.0;
     }//O(1)
 
 
@@ -41,8 +55,22 @@ public class RunMed {
      *                getMedian() can run in constant time
      *****************************************************/
     public void insert( int addVal )
-    {   
-     }//O(?)
+    {
+	//gather relatively smaller #s in leftHeap so med will be near max
+	//gather relatively larger #s in rightHeap so med will be near min
+        if (isEmpty())
+	    leftHeap.add( addVal );
+        else if (addVal < getMedian()) //if smaller than cur med then add to left
+	    leftHeap.add( addVal );
+	else
+	    rightHeap.add( addVal ); //otherwise add to right
+
+	//maintain balance by swapping largest/smallest to other heap as appropriate
+	if (rightHeap.size() - leftHeap.size() > 1)
+	    leftHeap.add( rightHeap.removeMin() );
+	else if (leftHeap.size() - rightHeap.size() > 1)
+	    rightHeap.add (leftHeap.removeMax() );
+    }//O(logn)
 
 
 
@@ -52,7 +80,7 @@ public class RunMed {
      *****************************************************/
     public boolean isEmpty() 
     {
-
+	return leftHeap.size() == 0 && rightHeap.size() == 0;
     }//O(?)
 
 
@@ -60,19 +88,24 @@ public class RunMed {
     //main method for testing
     public static void main( String[] args ) {
 
-	/*~~~V~~~~~~~~~~~~move~me~down~~~~~~~~~~~~~V~~~
+
         RunMed med = new RunMed();
 
         med.insert(1);
 	System.out.println( med.getMedian() ); //1
+
         med.insert(3);
 	System.out.println( med.getMedian() ); //2
+
         med.insert(5);
 	System.out.println( med.getMedian() ); //3
+
         med.insert(7);
 	System.out.println( med.getMedian() ); //4
+	
         med.insert(9);
 	System.out.println( med.getMedian() ); //5
+	/*~~~V~~~~~~~~~~~~move~me~down~~~~~~~~~~~~~V~~~
 	~~~~~|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|~~~*/
 
     }//end main()
@@ -88,4 +121,3 @@ public class RunMed {
     // {
     // 	/*** YOUR IMPLEMENTATION HERE ***/
     // }//O(?)
-
