@@ -81,7 +81,7 @@ public class RunMed {
     public boolean isEmpty() 
     {
 	return leftHeap.size() == 0 && rightHeap.size() == 0;
-    }//O(?)
+    }//O(1)
 
 
 
